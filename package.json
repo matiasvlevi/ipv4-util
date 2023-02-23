@@ -1,0 +1,14 @@
+{
+  "name": "ipv4-math",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "example": "examples"
+  },
+  "scripts": {
+    "example": "examples/demo.js"
+  },
+  "author": "",
+  "license": "ISC"
+}
