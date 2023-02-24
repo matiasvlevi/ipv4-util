@@ -1,5 +1,5 @@
 /**
- * EXAMPLE: Retrieve netmask from network address
+ * EXAMPLE: Retrieve netmask from network address with custom operations
  */
 const { IPv4 } = require('../index'); 
 
@@ -9,13 +9,11 @@ const ip = IPv4.fromCurrent();
 // Log interface IP
 ip.log();                  
 
-IPv4.from('255.255.255.0').shift_left(3).log();
-
 // Get network address, by masking a netmask to our IP
 const network = ip
     // Copy IP instance
     .copy()               
-    // Mask IP with netmask, this will be retrieved later
+    // Mask IP with netmask, this mask will be retrieved later
     .and('255.255.255.0') 
     // Display in console
     .log();               
@@ -41,7 +39,3 @@ const netmask = network
     // Display in console
     .log();
 
-    (async ()=> {
-        const res = await IPv4.from('192.168.12.12').ping();
-        console.log(res)
-    })()

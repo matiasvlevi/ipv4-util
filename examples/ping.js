@@ -1,9 +1,23 @@
-const { IPv4 } = require('../index');  // require('ipv4-math');
 
-// Avoir une de nos ip d'interfaces et l'imprimer a l'ecran
+const { IPv4 } = require('../index');
 
-const ip = IPv4.fromCurrent();
-ip
+/**
+ * EXAMPLE: Ping your current interface IP
+ */
+IPv4.fromCurrent()
+    .ping()
+    .then(err => {
+        if (err) {
+            console.err('Ping failed')
+        } else {
+            console.log('Ping successful!')
+        }
+    });
+
+/**
+ * EXAMPLE: Ping a remote IP
+ */
+IPv4.from('66.96.162.144')
     .ping()
     .then(err => {
         if (err) {

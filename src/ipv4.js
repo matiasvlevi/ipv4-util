@@ -13,15 +13,37 @@ class IPv4 {
      */
     constructor(value) 
     {
-        this._u32_value =  0x00000000;
+        this._u32_value = IPv4.to_u32_convert(value);
 
-        if (typeof value in IPv4.constructor_conv)
-        {
-            this._u32_value = 
-                IPv4.constructor_conv[typeof value](value);
-        }
-
+        // DEBUG
         this.string = this.toString();
+    }
+
+    /**
+     * Lookup table for conversions to u32 based on input value type
+     */
+    static to_u32_conversions = {
+        'String': IPv4.fromString,
+        'Number': x => x,
+        'IPv4'  : x => x._u32_value
+    };
+
+    /**
+     * @method to_u32_convert
+     * 
+     * @param {IPv4|Number|String} value A value representing an IPv4 
+     * @returns An IPv4 as a uint32
+     */
+    static to_u32_convert(value) {
+        if (value.constructor.name in IPv4.to_u32_conversions)
+        {
+            return IPv4.to_u32_conversions[value.constructor.name](value);
+        } 
+        else
+        {
+            console.error("IPv4 Error: Value type must be Numeric, String or an instance of IPv4");
+            return 0x00000000;
+        }
     }
 
     /**
@@ -34,28 +56,13 @@ class IPv4 {
     }
 
     /**
-     * Lookup table for conversions based on input value type
-     */
-    static constructor_conv = {
-        'string': IPv4.fromString,
-        'number': x => x,
-        'object': x => x._u32_value
-    }
-
-    static conversions = {
-        'String': x => new IPv4(x)._u32_value,
-        'Number': x => x,
-        'IPv4'  : x => x._u32_value
-    };
-
-    /**
      * @method fromString
-     * @static
      * 
      * Convert from a string ip to uint32 from
      * 
      * @param {string} ip_string 
-     * @returns 
+     * 
+     * @returns A uint32 value representing an IPv4
      */
     static fromString(ip_string) {
 
@@ -65,6 +72,13 @@ class IPv4 {
                 // Value range restrictions 0 to 255
                 Math.max(0, Math.min(Number(x), 0xFF))
         );
+
+        if (bytes.length !== 4) {
+            console.error(
+                "IPv4 Error: Expects string to be denoted with 4 decimal values separated with `.`"
+            );
+            return 0x00000000;
+        }
 
         // Returned value
         let value = 0x00000000;
@@ -109,6 +123,16 @@ class IPv4 {
     }
 
     /**
+     * @method copy
+     * @chainable
+     * 
+     * Copy an IPv4 instance
+     */
+    copy() {
+        return new IPv4(this._u32_value);
+    }
+
+    /**
      * @method and
      * @chainable
      * 
@@ -117,8 +141,7 @@ class IPv4 {
      * @param {IPv4|string|number} mask The mask value
      */
     and(mask) {
-        this._u32_value &= 
-            IPv4.conversions[mask.constructor.name](mask);
+        this._u32_value &= IPv4.to_u32_convert(mask);
 
         return this;
     }
@@ -132,9 +155,7 @@ class IPv4 {
      * @param {IPv4|string|number} mask The mask value
      */
     or(mask) {
-        this._u32_value |= 
-            IPv4.conversions[mask.constructor.name](mask);
-
+        this._u32_value |= IPv4.to_u32_convert(mask);
 
         return this;
     }
@@ -148,8 +169,7 @@ class IPv4 {
      * @param {IPv4|string|number} mask The mask value
      */
     xor(mask) {
-        this._u32_value ^= 
-            IPv4.conversions[mask.constructor.name](mask);
+        this._u32_value ^=  IPv4.to_u32_convert(mask);
 
         return this;
     }
@@ -163,8 +183,7 @@ class IPv4 {
      * @param {IPv4|string|number} mask The mask value
      */
     add(mask) {
-        this._u32_value += 
-            IPv4.conversions[mask.constructor.name](mask);
+        this._u32_value +=  IPv4.to_u32_convert(mask);
 
         return this;
     }
@@ -181,13 +200,89 @@ class IPv4 {
         return this;
     }
 
-    op(operation) {
-        this._u32_value = operation(this._u32_value);
+    /**
+     * @method ceil
+     * 
+     * Every byte which is not 0, is set to 255
+     * 
+     * @chainable
+     */
+    ceil() {
+        for (let i = 0; i < 4; i++) {
+            let byte = 0xFF << (8*i);
+            if (!((this._u32_value >> 8*i) & 0xFF)) {
+                this._u32_value |=  byte;
+            }
+        }
+        return this;
+    }
+    
+    /**
+     * @method floor
+     * 
+     * Every byte which is not 255, is set to 0
+     * 
+     * @chainable
+     */
+    floor() {
+        for (let i = 0; i < 4; i++) {
+            let byte = 0xFF << (8*i);
+            if (((this._u32_value >> 8*i) & 0xFF) != 0xFF) {
+                this._u32_value &=  ~byte;
+            }
+        }
         return this;
     }
 
-    copy() {
-        return new IPv4(this._u32_value);
+    /**
+     * @method it
+     * @chainable
+     * 
+     * Iterate through an IPv4 instance's bytes
+     * 
+     * @example
+     * <code>
+     * 
+     * myIp.copy()
+     *   .it((byte, byte_index) => {
+     *     return byte - 16
+     *    })
+     *   .log();
+     * 
+     * </code>
+     * 
+     * @param {Function} operation An operation to run, takes 2 arguments, the byte data (0 to 255) and the byte index
+     * @returns 
+     */
+    it(operation) {
+        let ans = 0x00000000;
+        for (let i = 3; i >= 0; i--) {
+            let byte_return = operation(
+                (this._u32_value >> (8*i)) & 0xFF, i
+            ) & 0xFF;
+
+            if (byte_return !== undefined) 
+                ans |= byte_return << (8*i);
+            
+        }
+        
+        this._u32_value = ans;
+
+        return this;
+    }
+
+    /**
+     * @method op
+     * @chainable
+     * 
+     * Run an assignment operation on the uint32
+     * 
+     * @param {Function} operation Assignement operation function, takes in the current value, returns the new value
+     * @returns 
+     */
+    op(operation) {
+        this._u32_value = operation(this._u32_value);
+        return this;
     }
 
     /**
@@ -217,7 +312,7 @@ class IPv4 {
      */
     getNetwork(mask = 0xFFFFFF00) {
         return new IPv4(this.and(
-            IPv4.conversions[mask.constructor.name](mask)
+            IPv4.to_u32_convert(mask)
         ));
     }
 
@@ -240,55 +335,46 @@ class IPv4 {
      * RangeTable commands
      */
     rangeTable({ hosts, subnets }) {
-       return this.#tableByHostCount(hosts * subnets, subnets); 
+       return this.#tableByHostCount(hosts, subnets); 
     }
 
     /**
      * @method subnetsByHostCount
+     * 
+     * REVISION NEEDED
      * 
      * @param {number} count The number of hosts in each subnet 
      * @returns 
      */
     #tableByHostCount(count, subnets) {
         let table = [];
-        let increments = count + 3;
+        let increments = count + 1;
         let network = this.getNetwork().or(1);
-        
-        for (let i = 0; i <= subnets * increments; i+=increments) {
-            table.push(IPv4.makeRange(network._u32_value, i, increments));
-            i += increments;
+        let netmask = IPv4.getMaskFromHostBits(IPv4.hostBits(count));
+
+        let ceil_mask = netmask.copy().floor();
+
+        console.log(ceil_mask.toString());
+
+        const length = Math.min(~(ceil_mask._u32_value) + 1, subnets * increments);
+
+        for (let i = 0; i <= length; i+=increments) {
+            table.push(IPv4.makeRange(network._u32_value, increments));
+            network.add(increments);
         }
 
         return {
-            subnets:  this.normalizeToIPv4(table),
-            mask: IPv4.getMaskFromHostBits(IPv4.hostBits(count))
+            subnets:  this.normalizeToIPv4(table).splice(0, subnets),
+            netmask 
         }
     }
 
-    #tableBySubnetCount(count) {
-        let host_bits = IPv4.hostBits(count);
-        let increments = IPv4.getRangeSize(host_bits);
-
-        let network = this.getNetwork().or(1);
-
-        let table = [];
-
-        for(let i = 0; i < count * increments; i+=increments) {
-            table.push(IPv4.makeRange(network._u32_value, i, increments));
-        }
-
+    static makeRange(_u32_value, increments) {
         return {
-            subnets: this.normalizeToIPv4(table),
-            mask: IPv4.getMaskFromHostBits(host_bits)
-        }
-    }
-
-    static makeRange(_u32_value, i, increments) {
-        return {
-            network: _u32_value + i,
-            first: _u32_value + i + 1,
-            last: _u32_value + (i+increments) - 2,
-            broadcast: _u32_value + (i+increments) - 1
+            network: _u32_value,
+            first: _u32_value + 1,
+            last: _u32_value + increments - 2,
+            broadcast: _u32_value + increments - 1
         }
     }
 
@@ -371,8 +457,8 @@ class IPv4 {
      * 
      * Ping the instance's ip address, uses the `ping` process
      */
-    async ping() {
-        return IPv4.ping(this._u32_value);;
+    async ping(options = {}) {
+        return IPv4.ping(this._u32_value, options);
     }
 
     /**
@@ -382,22 +468,25 @@ class IPv4 {
      * 
      * @param {IPv4|String|Number} ip The ip address 
      */
-    static async ping(ip) {
+    static async ping(ip, options = {}) {
+
         let proc;
-        ip = IPv4.conversions[ip.constructor.name](ip); 
+        ip = IPv4.to_u32_convert(ip); 
 
         if (process.platform == 'win32')     
             proc = spawn('ping', ['/l', '1', IPv4.toString(ip)]);
         else    
             proc = spawn('ping', ['-c', '1', '-i', '0.2', IPv4.toString(ip)]);
+        
+        if (!options.silent) {
+            proc.stderr.on('data', (data) => {
+                process.stdout.write(data);
+            });
 
-        proc.stderr.on('data', (data) => {
-            process.stdout.write(data);
-        });
-
-        proc.stdout.on('data', (data) => {
-            process.stdout.write(data);
-        });
+            proc.stdout.on('data', (data) => {
+                process.stdout.write(data);
+            });      
+        }
 
         return new Promise((resolve) => {
             proc.on('close', err => resolve(err));
@@ -468,6 +557,10 @@ class IPv4 {
         process.stdout.write(`\x1b[0m\n`);
     }
 
+    /**
+     * Weight Constants
+     * for printing
+     */
     static HEX = 16;
     static DEC = 10;
     static BIN =  2;
@@ -481,16 +574,16 @@ class IPv4 {
      */
     log(opt = 0) {
         switch (opt) {
-            case 2:
+            case IPv4.BIN:
                 IPv4.#log_bin(this._u32_value);
                 break;
-            case 10:
+            case IPv4.DEC:
                 IPv4.#log_dec(this._u32_value);
                 break;
-            case 16:
+            case IPv4.HEX:
                 IPv4.#log_hex(this._u32_value);
                 break;
-            case 1:
+            case IPv4.STDOUT:
                 process.stdout.write(this.toString());
                 break;
             default:
