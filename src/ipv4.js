@@ -1,4 +1,5 @@
 const os = require('node:os');
+const { spawn } = require('node:child_process');
 
 class IPv4 {
     /**
@@ -14,10 +15,10 @@ class IPv4 {
     {
         this._u32_value =  0x00000000;
 
-        if (typeof value in IPv4.conversions)
+        if (typeof value in IPv4.constructor_conv)
         {
             this._u32_value = 
-                IPv4.conversions[typeof value](value);
+                IPv4.constructor_conv[typeof value](value);
         }
 
         this.string = this.toString();
@@ -35,11 +36,17 @@ class IPv4 {
     /**
      * Lookup table for conversions based on input value type
      */
-    static conversions = {
+    static constructor_conv = {
         'string': IPv4.fromString,
         'number': x => x,
         'object': x => x._u32_value
     }
+
+    static conversions = {
+        'String': x => new IPv4(x)._u32_value,
+        'Number': x => x,
+        'IPv4'  : x => x._u32_value
+    };
 
     /**
      * @method fromString
@@ -110,12 +117,8 @@ class IPv4 {
      * @param {IPv4|string|number} mask The mask value
      */
     and(mask) {
-        if (mask instanceof IPv4)
-            this._u32_value &= mask._u32_value;
-        else if (typeof mask == 'number') 
-            this._u32_value &= mask;
-        else if (typeof mask == 'string') 
-            this._u32_value &= new IPv4(mask)._u32_value;
+        this._u32_value &= 
+            IPv4.conversions[mask.constructor.name](mask);
 
         return this;
     }
@@ -129,12 +132,9 @@ class IPv4 {
      * @param {IPv4|string|number} mask The mask value
      */
     or(mask) {
-        if (mask instanceof IPv4)
-            this._u32_value |= mask._u32_value;
-        else if (typeof mask == 'number') 
-            this._u32_value |= mask;
-        else if (typeof mask == 'string') 
-            this._u32_value |= new IPv4(mask)._u32_value;
+        this._u32_value |= 
+            IPv4.conversions[mask.constructor.name](mask);
+
 
         return this;
     }
@@ -148,14 +148,46 @@ class IPv4 {
      * @param {IPv4|string|number} mask The mask value
      */
     xor(mask) {
-        if (mask instanceof IPv4)
-            this._u32_value ^= mask._u32_value;
-        else if (typeof mask == 'number') 
-            this._u32_value ^= mask;
-        else if (typeof mask == 'string') 
-            this._u32_value ^= new IPv4(mask)._u32_value;
+        this._u32_value ^= 
+            IPv4.conversions[mask.constructor.name](mask);
 
         return this;
+    }
+
+    /**
+     * @method add
+     * @chainable
+     * 
+     * Perform addition operation to an IP instance
+     * 
+     * @param {IPv4|string|number} mask The mask value
+     */
+    add(mask) {
+        this._u32_value += 
+            IPv4.conversions[mask.constructor.name](mask);
+
+        return this;
+    }
+
+    shift_left(bits) {
+        this._u32_value <<= bits;
+
+        return this;
+    }
+
+    shift_right(bits) {
+        this._u32_value >>= bits;
+
+        return this;
+    }
+
+    op(operation) {
+        this._u32_value = operation(this._u32_value);
+        return this;
+    }
+
+    copy() {
+        return new IPv4(this._u32_value);
     }
 
     /**
@@ -168,20 +200,25 @@ class IPv4 {
      */
     getRange() {
         let count = 0;
+        let mask = 0xFFFFFFFF;
+        mask &= this._u32_value;
 
-        while (((this._u32_value >>= 1) & 1) == 0) 
+        while (!((mask >>= 1) & 1)) 
             count++;
         
         return 31 - count;
     }
 
     /**
+     * @method getNetwork
      * 
      * @param {IPv4|string|number} mask 
      * @returns 
      */
     getNetwork(mask = 0xFFFFFF00) {
-        return new IPv4(this.and(mask));
+        return new IPv4(this.and(
+            IPv4.conversions[mask.constructor.name](mask)
+        ));
     }
 
     /**
@@ -200,94 +237,11 @@ class IPv4 {
     }
 
     /**
-     * Display commands
-     */
-
-    /**
-     * @method log_bin
-     * 
-     * @brief Log the IPv4 as binary
-     */
-    static #log_bin(_u32_value) {
-        process.stdout.write(`\x1b[0m\n\r`);
-        process.stdout.write("Binary IPv4: \x1b[92m\n\r\t");
-        for (let i = 3; i >= 0; i--) {
-            for (let j = 7; j >= 0; j--) {
-                process.stdout.write(
-                    ((_u32_value >> (8*i+j)) & 1)
-                        .toString(2)
-                );
-            }
-            process.stdout.write(" ");
-        }
-
-        process.stdout.write(`\x1b[0m\n\r\n\r`);
-    }
-
-    /**
-     * @method log_hex
-     * 
-     * @brief Log the IPv4 as hexadecimal
-     */
-    static #log_hex(_u32_value) {
-        process.stdout.write(`\x1b[0m\n\r`);
-        process.stdout.write("Hexadecimal IPv4: \x1b[92m\n\r\t");
-        for (let i = 0; i < 4; i++) {
-            process.stdout.write(
-                (_u32_value >> (8*(3-i)) & 0xFF)
-                    .toString(16)
-                    .padStart(2, '0')
-            );
-            process.stdout.write("  ");
-        }
-        process.stdout.write(`\x1b[0m\n\r\n\r`);
-    }
-
-    /**
-     * @method log_dec
-     * 
-     * @brief Log the IPv4 as decimal
-     */
-    static #log_dec(_u32_value) {
-        process.stdout.write(`\x1b[0m\n\r`);
-        process.stdout.write("String IPv4: \x1b[92m\n\r\t");
-        process.stdout.write(
-            IPv4.toString(_u32_value)
-        );
-        process.stdout.write(`\x1b[0m\n\r\n\r`);
-    }
-
-    static HEX = 16;
-    static DEC = 10;
-    static BIN =  2;
-
-    /**
-     * @method log
-     * 
-     * @brief Log the IPv4
-     */
-    log(opt = 0) {
-        switch (opt) {
-            case 2:
-                IPv4.#log_bin(this._u32_value);
-                break;
-            case 10:
-                IPv4.#log_dec(this._u32_value);
-                break;
-            case 16:
-                IPv4.#log_hex(this._u32_value);
-                break;
-            default:
-                IPv4.#log_bin(this._u32_value);
-                IPv4.#log_hex(this._u32_value);
-                IPv4.#log_dec(this._u32_value);
-                process.stdout.write(`\x1b[0m\n\r`);
-                break;
-        }
-    }
-    /**
      * RangeTable commands
      */
+    rangeTable({ hosts, subnets }) {
+       return this.#tableByHostCount(hosts * subnets, subnets); 
+    }
 
     /**
      * @method subnetsByHostCount
@@ -295,15 +249,12 @@ class IPv4 {
      * @param {number} count The number of hosts in each subnet 
      * @returns 
      */
-    tableByHostCount(count) {
+    #tableByHostCount(count, subnets) {
         let table = [];
         let increments = count + 3;
         let network = this.getNetwork().or(1);
         
-        let i = 0;
-        while(
-            ((network._u32_value + i) & 0xFF) < (0xFF - increments)
-        ) {
+        for (let i = 0; i <= subnets * increments; i+=increments) {
             table.push(IPv4.makeRange(network._u32_value, i, increments));
             i += increments;
         }
@@ -314,7 +265,7 @@ class IPv4 {
         }
     }
 
-    tableBySubnetCount(count) {
+    #tableBySubnetCount(count) {
         let host_bits = IPv4.hostBits(count);
         let increments = IPv4.getRangeSize(host_bits);
 
@@ -362,20 +313,195 @@ class IPv4 {
     /**
      * OS Commands
      */
-    static get(localhost = false) {
+
+    /**
+     * @method getNetworkInterfaces
+     * 
+     * Get all network interfaces IP adresses
+     * 
+     * @param {boolean} localhost 
+     * @returns An array of 
+     */
+    static getNetworkInterfacesIPv4(localhost = false) {
         let interfaces = os.networkInterfaces();
         if (!localhost) delete interfaces['lo'];
+        
         return Object.values(interfaces).map(x => {
-            return x[0].address
+            return new IPv4(x[0].address)
         });
     }
 
-    static fromCurrent() {
-        return new IPv4(IPv4.get()[0]);
+    /**
+     * @method getMask
+     * 
+     * @returns Interface mask as an IPv4 instance
+     */
+    static getMask() {
+        let interfaces = os.networkInterfaces();
+        delete interfaces['lo'];
+
+        return new IPv4(Object.values(interfaces).map(x => {
+            return x[0].netmask;
+        })[0]);
     }
 
+    /**
+     * @method fromCurrent
+     * 
+     * Get the local ip from the computer's interface
+     * 
+     * @returns Interface ip as an IPv4 instance
+     */
+    static fromCurrent() {
+        return IPv4.getNetworkInterfacesIPv4()[0];
+    }
+
+    /**
+     * @method fromLocalhost 
+     * 
+     * @returns Current localhost interface as an IPv4 instance
+     */
     static fromLocalhost() {
         return new IPv4(os.networkInterfaces().lo[0].address);
+    }
+
+    /**
+     * @method ping
+     * @chainable
+     * 
+     * Ping the instance's ip address, uses the `ping` process
+     */
+    async ping() {
+        return IPv4.ping(this._u32_value);;
+    }
+
+    /**
+     * @method ping
+     * 
+     * Ping an IP address
+     * 
+     * @param {IPv4|String|Number} ip The ip address 
+     */
+    static async ping(ip) {
+        let proc;
+        ip = IPv4.conversions[ip.constructor.name](ip); 
+
+        if (process.platform == 'win32')     
+            proc = spawn('ping', ['/l', '1', IPv4.toString(ip)]);
+        else    
+            proc = spawn('ping', ['-c', '1', '-i', '0.2', IPv4.toString(ip)]);
+
+        proc.stderr.on('data', (data) => {
+            process.stdout.write(data);
+        });
+
+        proc.stdout.on('data', (data) => {
+            process.stdout.write(data);
+        });
+
+        return new Promise((resolve) => {
+            proc.on('close', err => resolve(err));
+        })
+    }
+
+    /**
+     * Display commands
+     */
+
+    /**
+     * @method log_bin
+     * 
+     * @brief Log the IPv4 as binary
+     */
+    static #log_bin(_u32_value) {
+        process.stdout.write(`\x1b[0m`);
+        process.stdout.write("BIN IPv4: \x1b[92m\t");
+
+        for (let i = 3; i >= 0; i--) {
+            for (let j = 7; j >= 0; j--) {
+                process.stdout.write(
+                    ((_u32_value >> (8*i+j)) & 1)
+                        .toString(2)
+                );
+            }
+            process.stdout.write(" ");
+        }
+
+        process.stdout.write(`\x1b[0m\n`);
+    }
+
+    /**
+     * @method log_hex
+     * 
+     * @brief Log the IPv4 as hexadecimal
+     */
+    static #log_hex(_u32_value) {
+        process.stdout.write(`\x1b[0m`);
+        process.stdout.write("HEX IPv4: \x1b[92m\t");
+        for (let i = 0; i < 4; i++) {
+            process.stdout.write(
+                (_u32_value >> (8*(3-i)) & 0xFF)
+                    .toString(16)
+                    .padStart(2, '0').padStart(8, ' ')
+            );
+            process.stdout.write(" ");
+        }
+
+        process.stdout.write(`\x1b[0m\n`);
+    }
+
+    /**
+     * @method log_dec
+     * 
+     * @brief Log the IPv4 as decimal
+     */
+    static #log_dec(_u32_value) {
+        process.stdout.write(`\x1b[0m`);
+        process.stdout.write("DEC IPv4: \x1b[92m\t");
+        process.stdout.write(
+            IPv4.toString(_u32_value)
+                .split('.')
+                .map(x => x.padStart(8, ' '))
+                .join(' ')
+        );
+
+        process.stdout.write(`\x1b[0m\n`);
+    }
+
+    static HEX = 16;
+    static DEC = 10;
+    static BIN =  2;
+    static STDOUT = 1;
+
+    /**
+     * @method log
+     * @chainable
+     * 
+     * @brief Log the IPv4
+     */
+    log(opt = 0) {
+        switch (opt) {
+            case 2:
+                IPv4.#log_bin(this._u32_value);
+                break;
+            case 10:
+                IPv4.#log_dec(this._u32_value);
+                break;
+            case 16:
+                IPv4.#log_hex(this._u32_value);
+                break;
+            case 1:
+                process.stdout.write(this.toString());
+                break;
+            default:
+                process.stdout.write(`IPv4 (\x1b[91m${this.toString()}\x1b[0m):\n`);
+                IPv4.#log_bin(this._u32_value);
+                IPv4.#log_hex(this._u32_value);
+                IPv4.#log_dec(this._u32_value);
+                process.stdout.write(`\x1b[0m\n\r`);
+                break;
+        }
+        return this;
     }
 }
 

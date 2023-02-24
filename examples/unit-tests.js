@@ -35,6 +35,14 @@ const TESTS = {
         ip = new IPv4(IPv4.toString(value));
         unit.assert(ip._u32_value, value);
     },
+    "IPv4.prototype.getRange" : 
+    (unit) => {    
+        const mask = new IPv4(0xFFFFFFFF);
+        for (let i = 1; i < 32; i++) {
+            mask.shift_left(1);
+            unit.assert(32-i, mask.getRange())
+        }
+    },
 
 };
 
