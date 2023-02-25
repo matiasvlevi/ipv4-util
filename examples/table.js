@@ -1,12 +1,20 @@
-const { IPv4 } = require('../index');
+/**
+ * EXAMPLE: Define a mask based on network requirements in terms of subnets and hosts
+ * 
+ * This is an implementation separate from IPv4
+ */
 
-// Avoir une de nos ip d'interfaces et l'imprimer a l'ecran
-const myIp = IPv4.fromCurrent();
+const { IPv4, Table } = require('../index');
 
-const table = myIp.rangeTable({
-    hosts: 21,
-    subnets: 15
-});
+// Add plugin 
+IPv4.use(Table);
 
-console.log(table.subnets)
-console.log(table.netmask)
+const table = 
+    IPv4.from('192.168.1.1')
+        .rangeTable({
+            hosts: 21,
+            subnets: 5
+        });
+
+console.log(table.subnets);
+console.log(table.netmask);

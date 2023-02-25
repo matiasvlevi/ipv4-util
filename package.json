@@ -7,8 +7,13 @@
     "example": "examples"
   },
   "scripts": {
-    "example": "examples/demo.js"
+    "example": "examples/demo.js",
+    "doc": "jsdoc -R README.md -c .docrc -p ./src -r -d ./docs"
   },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "clean-jsdoc-theme": "^4.2.6",
+    "jsdoc": "^4.0.2"
+  }
 }

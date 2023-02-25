@@ -1,21 +1,22 @@
 const { IPv4 } = require('../index');
 
-// Avoir une de nos ip d'interfaces et l'imprimer a l'ecran
-const myIp = IPv4.from('255.192.127.2');
+const ip   = IPv4.from('172.212.56.2');
+const mask = IPv4.from('255.255.0.0');
 
-// Custom operations for each byte
-myIp.copy()
-    .it((byte, i) => {
-        return byte - 16
-    })
-    .log();
-
-// Get byte index
-myIp.copy()
+// Print byte index in an IPv4
+ip.copy()
     .it((byte, i) => {
         return i
     })
     .log();
 
+// Mask an ip
+ip.copy()
+    .it((byte, i) => {
+        return byte & mask.u8(i)
+    })
+    .log();
+
+
 // myIP instance is unchanged since copy() was used
-myIp.log();
+ip.log();

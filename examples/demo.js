@@ -1,8 +1,8 @@
-const { IPv4 } = require('../index');
+const { IPv4, Hardware } = require('../index');
 
-// Avoir une de nos ip d'interfaces et l'imprimer a l'ecran
+IPv4.use(Hardware); // for `fromCurrent`
+
+// Get first interface IP
 const myIp = IPv4.fromCurrent();
 
 myIp.log();
-
-const myIP2 = IPv4.from('').log(); 
