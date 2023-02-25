@@ -1,6 +1,6 @@
 {
-  "name": "ipv4-utils",
-  "version": "1.0.0",
+  "name": "ipv4-util",
+  "version": "0.1.0",
   "description": "",
   "main": "index.js",
   "directories": {

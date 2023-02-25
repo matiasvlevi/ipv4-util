@@ -1,3 +1,5 @@
 examples/
 test/
+docs/
+.docrc
 .gitignore
