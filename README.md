@@ -1,4 +1,4 @@
-# ipv4-utils
+# ipv4-util
 
 See [documentation](https://rawcdn.githack.com/matiasvlevi/ipv4-util/master/docs/index.html)
 
