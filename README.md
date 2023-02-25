@@ -4,7 +4,7 @@ See [documentation](https://rawcdn.githack.com/matiasvlevi/ipv4-math/master/docs
 
 The `Date` object of IPv4
 
-A type representing IPv4 protocol adresses. 
+A type representing IPv4 protocol addresses. 
 
 * Store IPv4's as uint32
 * Perform operations
