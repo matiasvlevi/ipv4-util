@@ -14,7 +14,7 @@ A type representing IPv4 protocol addresses.
 ### Install 
 
 ```
-npm i ipv4-utils
+npm i ipv4-util
 ```
 
 
