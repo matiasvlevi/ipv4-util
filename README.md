@@ -23,7 +23,7 @@ npm i ipv4-util
 Require the IPv4 type 
 
 ```js
-const { IPv4 } = require('ipv4-utils');
+const { IPv4 } = require('ipv4-util');
 ```
 
 Create an IPv4 instance
@@ -134,7 +134,7 @@ Some functionality has to be included this design is to promote minimalism of th
 This examples fetches the ip from the first active interface
 
 ```js
-const { IPv4, Hardware } = require('ipv4-utils');
+const { IPv4, Hardware } = require('ipv4-util');
 
 IPv4.use(Hardware);
 
@@ -144,7 +144,7 @@ const my_interface_ip = IPv4.fromCurrent();
 This example ping your local host
 
 ```js
-const { IPv4, Hardware } = require('ipv4-utils');
+const { IPv4, Hardware } = require('ipv4-util');
 
 IPv4.use(Hardware);
 
