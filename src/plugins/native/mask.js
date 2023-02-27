@@ -8,6 +8,7 @@
  * Provides mask utilities
  * 
  */
+
 /**
  * @class Mask
  * @hideconstructor
@@ -16,11 +17,16 @@ class Mask {};
 
 /**
  * @method getRange
- * @brief Display the range of a mask
+ * @summary 
+ * Display the range of a mask
+ * 
+ * @desc
  * this method expects the instance to hold a mask value
  * 
+ * @example
+ * const range = IPv4.from('255.255.255.0').getRange(); // 24
  * 
- * @returns the range as a numeric value
+ * @returns {Number} the range as a numeric value
  */
 Mask.prototype.getRange = function getRange() 
 {

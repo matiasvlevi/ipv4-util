@@ -1,4 +1,5 @@
 const IPv4 = require('../../ipv4');
+
 /**
  * @module Operations
  * 
@@ -9,6 +10,7 @@ const IPv4 = require('../../ipv4');
  * Provides binary operations, arithmetic operations, iterators, and allows for custom operations.
  *
  */
+
 /**
  * @class Operations
  * @hideconstructor
@@ -18,11 +20,12 @@ class Operations {};
 /**
  * @method and
  * 
- * @chainable
- * 
+ * @summary
  * Perform an AND operation to an IP instance
  * 
  * @param {IPv4|string|number} mask The mask value
+ * 
+ * @returns {this} A pointer to itself
  */
 Operations.prototype.and = function and(mask) 
 {
@@ -33,11 +36,13 @@ Operations.prototype.and = function and(mask)
 
 /**
  * @method or
- * @chainable
  * 
+ * @summary
  * Perform an OR operation to an IP instance
  * 
  * @param {IPv4|string|number} mask The mask value
+ * 
+ * @returns {this} A pointer to itself
  */
 Operations.prototype.or = function or(mask) 
 {
@@ -48,11 +53,13 @@ Operations.prototype.or = function or(mask)
 
 /**
  * @method xor
- * @chainable
  * 
+ * @summary
  * Perform an XOR operation to an IP instance
  * 
  * @param {IPv4|string|number} mask The mask value
+ * 
+ * @returns {this} A pointer to itself
  */
 Operations.prototype.xor = function xor(mask) 
 {
@@ -62,15 +69,14 @@ Operations.prototype.xor = function xor(mask)
 }
 
 /**
- * @class add
  * @method add
- * @chainable
  * 
+ * @summary
  * Perform addition operation to an IP instance
  * 
  * @param {IPv4|string|number} value The mask value
  * 
- * 
+ * @returns {this} A pointer to itself
  */
 Operations.prototype.add = function add(value) 
 {
@@ -81,11 +87,13 @@ Operations.prototype.add = function add(value)
 
 /**
  * @method shift_left
- * @chainable
  * 
+ * @summary
  * Shift the IPv4 bits left
  * 
  * @param {Number} bits The number of bits to shift the IPv4 instance
+ * 
+ * @returns {this} A pointer to itself
  */
 Operations.prototype.shift_left = function shift_left(bits) 
 {
@@ -96,13 +104,13 @@ Operations.prototype.shift_left = function shift_left(bits)
 
 /**
  * @method shift_right
- * @chainable
  * 
+ * @summary
  * Shift the IPv4 bits right
  * 
  * @param {Number} bits The number of bits to shift the IPv4 instance
  * 
- * 
+ * @returns {this} A pointer to itself
  */
 Operations.prototype.shift_right = function shift_right(bits) 
 {
@@ -113,11 +121,11 @@ Operations.prototype.shift_right = function shift_right(bits)
 
 /**
  * @method ceil
- * @chainable
  * 
+ * @summary
  * Every byte which is not 0, is set to 255
  * 
- * 
+ * @returns {this} A pointer to itself
  */
 Operations.prototype.ceil = function ceil() 
 {
@@ -133,10 +141,11 @@ Operations.prototype.ceil = function ceil()
 
 /**
  * @method floor
- * @chainable
  * 
+ * @summary
  * Every byte which is not 255, is set to 0
  * 
+ * @returns {this} A pointer to itself
  */
 Operations.prototype.floor = function floor() 
 {
@@ -152,8 +161,8 @@ Operations.prototype.floor = function floor()
 
 /**
  * @method it
- * @chainable
  * 
+ * @summary
  * Iterate through an IPv4 instance's bytes
  * 
  * @example
@@ -165,6 +174,8 @@ Operations.prototype.floor = function floor()
  * 
  * 
  * @param {Function} operation An operation to run, takes 2 arguments, the byte data (0 to 255) and the byte index
+ * 
+ * @returns {this} A pointer to itself
  */
 Operations.prototype.it = function it(operation) 
 {

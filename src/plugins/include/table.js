@@ -1,17 +1,15 @@
-
+/**
+ * @file THIS SOURCE FILE IS A WORK IN PROGRESS 
+ */
 const IPv4 = require('../../ipv4');
 
 /**
  * @module Table
- */
-
-/**
- * <!> THIS SOURCE FILE IS A WORK IN PROGRESS <!>
- */
-
-/**
+ * 
+ * @summary
  * Subnet map Plugin for the IPv4 class
  * 
+ * @desc
  * Provides a way to map out large collections of subnets and calculate their mask
  * 
  * @example
@@ -19,11 +17,17 @@ const IPv4 = require('../../ipv4');
  * 
  * IPv4.use(Table);
  */
+
+/**
+ * @class Table
+ * @hideconstructor
+ */
 class Table {
     /**
      * @method makeRange
      * @static
      * 
+     * @summary
      * Create an object holding the network address, first host address, last host address, broadcast address
      * 
      * @param {Number} _u32_value The uint32 value representing an IPv4
@@ -104,6 +108,7 @@ class Table {
 /**
  * @method rangeTable
  * 
+ * @summary
  * Create a table of subnets following certain criteria
  * 
  * @example
@@ -126,7 +131,7 @@ Table.prototype.rangeTable = function rangeTable({ hosts, subnets })
 /**
  * @method tableByHostCount
  * 
- * @brief <!> REVISION NEEDED <!> 
+ * @summary REVISION NEEDED 
  * 
  * @param {number} count The number of hosts in each subnet 
  * @returns An object containing all requested subnets

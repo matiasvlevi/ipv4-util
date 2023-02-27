@@ -162,6 +162,10 @@ samp {
     background: #222;
 }
 
+.method-container {
+    border-bottom: 3px solid #222;
+}
+
 .member-item-container strong,
 .method-member-container strong {
     color: #fff;

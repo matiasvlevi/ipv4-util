@@ -1,4 +1,8 @@
+/**
+ * @file THIS SOURCE FILE IS A WORK IN PROGRESS 
+ */
 const IPv4 = require('../ipv4');
+
 /**
  * @module Hardware
  * 
@@ -18,10 +22,6 @@ const IPv4 = require('../ipv4');
  */
 
 /**
- * <!> THIS SOURCE FILE IS A WORK IN PROGRESS <!>
- */
-
-/**
  * @class Hardware
  * @hideconstructor
  */
@@ -30,6 +30,7 @@ class Hardware {
      * @method ping
      * @static 
      * 
+     * @summary
      * Ping an IP address
      * 
      * @param {IPv4|String|Number} ip The ip address 
@@ -68,6 +69,7 @@ class Hardware {
      * @method getNetworkInterfaces
      * @static 
      * 
+     * @summary
      * Get all network interfaces IP adresses
      * 
      * @returns os.interfaces output 
@@ -81,6 +83,7 @@ class Hardware {
      * @method getInterfacesIPv4
      * @static
      * 
+     * @summary
      * Get all network interfaces IP adresses
      * 
      * @param {boolean} [localhost] Whether or not to include localhost 
@@ -116,6 +119,7 @@ class Hardware {
      * @method fromCurrent
      * @static 
      * 
+     * @summary
      * Get the local ip from the computer's interface
      * 
      * @param {Number} [interface_index] The index of the interface
@@ -132,6 +136,9 @@ class Hardware {
     /**
      * @method fromLocalhost 
      * @static
+     * 
+     * @summary
+     * Get the current loopback address
      * 
      * @returns Current localhost interface as an IPv4 instance
      */

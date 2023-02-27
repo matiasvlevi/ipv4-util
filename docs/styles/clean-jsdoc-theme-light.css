@@ -160,6 +160,10 @@ body.light {
     color: #101010;
 }
 
+.method-container {
+    border-bottom: 3px solid #f7f7f7;
+}
+
 .light .member-item-container strong,
 .light .method-member-container strong {
     color: #000;

@@ -1,4 +1,5 @@
 const IPv4 = require('../../ipv4');
+
 /**
  * @module Logger
  * 
@@ -9,6 +10,7 @@ const IPv4 = require('../../ipv4');
  * Provides logging options for IPv4's
  * 
  */
+
 /**
  * @class Logger
  * @hideconstructor
@@ -146,8 +148,6 @@ class Logger {
  * 
  * // ip.log(IPv4.STDOUT);
  * 
- * 
- * @brief Log the IPv4
  */
 Logger.prototype.log = function log(opt = 0) {
     switch (opt) {

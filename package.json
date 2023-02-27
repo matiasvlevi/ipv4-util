@@ -8,12 +8,12 @@
   },
   "scripts": {
     "example": "examples/demo.js",
-    "doc": "jsdoc -R README.md -c .docrc -p ./src -r -d ./docs"
+    "doc": "rm -rf ./docs; node_modules/jsdoc/jsdoc.js -r ./README.md -c .docrc -p ./src -r -d ./docs"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "Matias Vazquez-Levi",
+  "license": "MIT",
   "devDependencies": {
-    "clean-jsdoc-theme": "^4.2.6",
+    "clean-jsdoc-theme": "https://github.com/matiasvlevi/clean-jsdoc-theme.git",
     "jsdoc": "^4.0.2"
   }
 }

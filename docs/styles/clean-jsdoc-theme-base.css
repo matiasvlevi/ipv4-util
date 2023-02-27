@@ -207,6 +207,11 @@ dt {
     margin-bottom: 2rem;
 }
 
+.method-container {
+    margin-bottom: 5rem;
+    padding-bottom: 3rem;
+}
+
 .method-member-container table {
     margin-top: 1rem;
 }
