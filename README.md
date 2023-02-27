@@ -1,6 +1,6 @@
 # ipv4-util
 
-See [documentation](https://rawcdn.githack.com/matiasvlevi/ipv4-util/master/docs/index.html)
+See [documentation](https://raw.githack.com/matiasvlevi/ipv4-util/master/docs/index.html)
 
 The `Date` object of IPv4
 
@@ -89,7 +89,7 @@ IPv4.from('255.255.255.0').getRange(); // 24
 
 Basic binary `AND OR XOR` operations are provided
 
-See [documentation](https://rawcdn.githack.com/matiasvlevi/util-math/master/docs/module-Operations.html) for other math operations 
+See [documentation](https://raw.githack.com/matiasvlevi/ipv4-util/master/docs/module-Operations.html) for other math operations 
 
 Again multiple types are accepted
 
