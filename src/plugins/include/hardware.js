@@ -1,7 +1,7 @@
 /**
  * @file THIS SOURCE FILE IS A WORK IN PROGRESS 
  */
-const IPv4 = require('../ipv4');
+const IPv4 = require('../../ipv4');
 
 /**
  * @module Hardware
