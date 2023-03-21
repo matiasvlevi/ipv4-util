@@ -1,6 +1,6 @@
 {
   "name": "ipv4-util",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "",
   "main": "index.js",
   "directories": {
@@ -8,7 +8,7 @@
   },
   "scripts": {
     "example": "examples/demo.js",
-    "doc": "rm -rf ./docs; node_modules/jsdoc/jsdoc.js -r ./README.md -c .docrc -p ./src -r -d ./docs"
+    "doc": "node node_modules/jsdoc/jsdoc.js -r ./README.md -c .docrc -p ./src -r -d ./docs"
   },
   "author": "Matias Vazquez-Levi",
   "license": "MIT",
