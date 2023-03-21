@@ -127,6 +127,24 @@ ip.op(ip => ~ip);
 
 <br/>
 
+## Library use cases
+
+Iterate through all usable hosts
+
+```js
+
+const network = IPv4.from('192.168.1.0');
+const mask    = IPv4.from('255.255.255.0');
+
+// Iterate through all usable hosts
+// loop ranges from 192.168.1.1 to 192.168.1.254
+for (let ip = network.copy().add(1); ip < (network | ~mask); ip.add(1)) {
+    // do something with `ip`
+}
+```
+
+<br/>
+
 ## Plugins
 
 Some functionality has to be included this design is to promote minimalism of the IPv4 type.
@@ -141,7 +159,7 @@ IPv4.use(Hardware);
 const my_interface_ip = IPv4.fromCurrent();
 ```
 
-This example ping your local host
+This example pings your local host
 
 ```js
 const { IPv4, Hardware } = require('ipv4-util');
@@ -155,4 +173,27 @@ IPv4.from('127.0.0.1')
             err ? 'error' : 'success'
         }`);
     });
+```
+
+<br/>
+
+This example pings all usable hosts in the given range
+
+```js
+const { IPv4, Hardware } = require('ipv4-util');
+
+IPv4.use(Hardware);
+
+const network = IPv4.from('192.168.1.0');
+const mask    = IPv4.from('255.255.255.0');
+
+// Iterate through all usable hosts
+// loop ranges from 192.168.1.1 to 192.168.1.254
+for (let ip = network.copy().add(1); ip < (network | ~mask); ip.add(1)) {
+    // Ping `ip`
+    ip.ping()
+      .then(err => {
+          if (err) console.log(`Unable to ping ${ip}`);
+      })
+}
 ```
