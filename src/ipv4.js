@@ -110,6 +110,25 @@ class IPv4 {
     }
 
     /**
+     * @method valueOf
+     * 
+     * native prototype method override
+     * 
+     * @desc 
+     * Get the stored uint32 representing your ip instance
+     * 
+     * @example
+     * const ip = IPv4.from('192.168.1.1');
+     * 
+     * console.log(ip | 0xFF); // 0xC0A801FF
+     * 
+     * @returns The full IPv4 as an uint32
+     */
+    valueOf() {
+        return this._u32_value;
+    }
+
+    /**
      * @method copy
      * 
      * @desc
