@@ -127,20 +127,23 @@ ip.op(ip => ~ip);
 
 <br/>
 
-## Library use cases
+## Iterators
 
 Iterate through all usable hosts
 
 ```js
-
-const network = IPv4.from('192.168.1.0');
-const mask    = IPv4.from('255.255.255.0');
-
-// Iterate through all usable hosts
-// loop ranges from 192.168.1.1 to 192.168.1.254
-for (let ip = network.copy().add(1); ip < (network | ~mask); ip.add(1)) {
-    // do something with `ip`
+// with Default gateway and broadcast address
+// Iterate from 10.0.0.1 to 10.0.0.254
+for (let ip = IPv4.from('10.0.0.1'); ip < IPv4.from('10.0.0.255'); ip.add(1)) {
+    ip.log()
 }
+
+// with Default gateway and Mask
+// Iterate from 10.0.0.1 to 10.0.0.254 
+for (let ip = IPv4.from('10.0.0.1'); ip < (ip | ~IPv4.from('255.255.255.0')); ip.add(1)) {
+    ip.log()
+}
+
 ```
 
 <br/>
@@ -184,12 +187,9 @@ const { IPv4, Hardware } = require('ipv4-util');
 
 IPv4.use(Hardware);
 
-const network = IPv4.from('192.168.1.0');
-const mask    = IPv4.from('255.255.255.0');
-
 // Iterate through all usable hosts
 // loop ranges from 192.168.1.1 to 192.168.1.254
-for (let ip = network.copy().add(1); ip < (network | ~mask); ip.add(1)) {
+for (let ip = IPv4.from('192.168.1.1'); ip < (ip | ~IPv4.from('255.255.255.0')); ip.add(1)) {
     // Ping `ip`
     ip.ping()
       .then(({ err, host }) => {
