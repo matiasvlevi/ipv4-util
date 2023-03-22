@@ -10,7 +10,6 @@ IPv4.use(Mask);
 IPv4.use(Operations);
 
 // Other Plugins
-const Table    = require('./src/plugins/include/table');
 const Hardware = require('./src/plugins/include/hardware');
 
-module.exports = { IPv4, Table, Hardware };
+module.exports = { IPv4, Hardware };
