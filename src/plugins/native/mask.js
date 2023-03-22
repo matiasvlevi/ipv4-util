@@ -31,16 +31,14 @@ class Mask {};
 Mask.prototype.getRange = function getRange() 
 {
     let count = 0;
-    let mask = this.copy();
-
-    while (!(
-        mask.shift_right(1)
-            .copy()
-            .and(0x01)
-            .u32()
-    )) count++;
+    let mask = this.u32();
     
-    return 31 - count;
+    while (!(mask & 1) && count < 32) {
+        mask >>= 1;
+        count++;
+    }
+    
+    return 32 - count;
 };
 
 module.exports = Mask;
