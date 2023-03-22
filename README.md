@@ -147,7 +147,9 @@ for (let ip = network.copy().add(1); ip < (network | ~mask); ip.add(1)) {
 
 ## Plugins
 
-Some functionality has to be included this design is to promote minimalism of the IPv4 type.
+Some functionality has to be included 
+
+this design is to promote minimalism of the IPv4 type.
 
 This examples fetches the ip from the first active interface
 
