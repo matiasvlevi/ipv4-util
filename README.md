@@ -170,10 +170,8 @@ IPv4.use(Hardware);
 
 IPv4.from('127.0.0.1')
     .ping()
-    .then(err => {
-        console.log(`State: ${
-            err ? 'error' : 'success'
-        }`);
+    .then(({ err }) => {
+        console.log(err ? 'error' : 'success');
     });
 ```
 
@@ -194,8 +192,11 @@ const mask    = IPv4.from('255.255.255.0');
 for (let ip = network.copy().add(1); ip < (network | ~mask); ip.add(1)) {
     // Ping `ip`
     ip.ping()
-      .then(err => {
-          if (err) console.log(`Unable to ping ${ip}`);
+      .then(({ err, host }) => {
+          if (err) 
+            console.log(`Unable to ping ${host}`)
+          else 
+            console.log(`Successfully pinged ${host}`)
       })
 }
 ```

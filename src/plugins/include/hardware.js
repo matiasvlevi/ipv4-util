@@ -43,7 +43,7 @@ class Hardware {
      * @param {IPv4|String|Number} ip The ip address 
      * 
      * @example
-     * IPv4.ping('127.0.0.1').then(err => console.log(err));
+     * IPv4.ping('127.0.0.1').then(response => console.log(response));
      */
     static async ping(ip, options = { silent: true }) 
     {
@@ -56,19 +56,17 @@ class Hardware {
         else    
             proc = Hardware.spawn('ping', ['-c', '1', '-i', '0.2', IPv4.toString(ip)]);
         
-        proc._ipv4_ping_error = 0;
+        proc._ipv4 = { err: 0, host: IPv4.from(ip) };
         proc.stderr.on('data', (data) => {
-            if (data.includes('unreachable')) {
-                proc._ipv4_ping_error = 1;
-            }
-
+            proc._ipv4.err = 1;
+            
             if (!options.silent) 
                 process.stdout.write(data);
         });
 
         proc.stdout.on('data', (data) => {
             if (data.includes('unreachable')) {
-                proc._ipv4_ping_error = 1;
+                proc._ipv4.err = 1;
             }
 
             if (!options.silent) 
@@ -77,12 +75,12 @@ class Hardware {
         
 
         return new Promise((resolve) => {
-            proc.on('close', err => Hardware.handlePing(resolve, proc, err));
+            proc.on('close', err => resolve(proc._ipv4));
         })
     }
 
-    static handlePing(cb, proc, err) {
-        cb(proc._ipv4_ping_error | err);
+    static handlePing(cb, proc) {
+        cb(proc._ipv4);
     }
     
     /**
