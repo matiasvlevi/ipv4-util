@@ -45,7 +45,7 @@ class Hardware {
      * @example
      * IPv4.ping('127.0.0.1').then(err => console.log(err));
      */
-    static async ping(ip, options = {}) 
+    static async ping(ip, options = { silent: true }) 
     {
 
         ip = IPv4.to_u32_convert(ip); 
