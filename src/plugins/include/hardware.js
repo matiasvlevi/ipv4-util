@@ -38,7 +38,7 @@ class Hardware {
      * @example
      * IPv4.ping('127.0.0.1').then(err => console.log(err));
      */
-    static async ping(ip, options = {}) 
+    static async ping(ip, options = { silent: true }) 
     {
         const { spawn } = require('node:child_process');
 
@@ -154,7 +154,7 @@ class Hardware {
  * 
  * Ping the instance's ip address, uses the `ping` process
  */
-Hardware.prototype.ping = async function ping(options = {}) 
+Hardware.prototype.ping = async function ping(options = { silent: true }) 
 {
     return Hardware.ping(this._u32_value, options);
 }
