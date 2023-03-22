@@ -188,6 +188,10 @@ class IPv4 {
     static use(plugin) 
     {
         let static_keys = Object.getOwnPropertyNames(plugin);
+        
+        if (plugin.init) 
+            static_keys.splice(static_keys.indexOf('init'), 1);
+
         for (let i = 3; i < static_keys.length; i++) 
         {
             IPv4[static_keys[i]] = plugin[static_keys[i]]
@@ -197,7 +201,11 @@ class IPv4 {
         {
             IPv4.prototype[instance_method] = plugin.prototype[instance_method];
         }
+
+        if (plugin.init) 
+            plugin.init();
     }
+
 
     /**
      * @method fromString

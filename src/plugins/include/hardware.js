@@ -27,6 +27,13 @@ const IPv4 = require('../../ipv4');
  */
 class Hardware {
     /**
+     * Module initiation
+     */
+    static init() {
+        Hardware.spawn = require('node:child_process').spawn;
+    }
+
+    /**
      * @method ping
      * @static 
      * 
@@ -38,31 +45,44 @@ class Hardware {
      * @example
      * IPv4.ping('127.0.0.1').then(err => console.log(err));
      */
-    static async ping(ip, options = { silent: true }) 
+    static async ping(ip, options = {}) 
     {
-        const { spawn } = require('node:child_process');
 
         ip = IPv4.to_u32_convert(ip); 
 
         let proc;
         if (process.platform == 'win32')     
-            proc = spawn('ping', ['/l', '1', IPv4.toString(ip)]);
+            proc = Hardware.spawn('ping', ['/l', '1', '/w', '1000', IPv4.toString(ip)]);
         else    
-            proc = spawn('ping', ['-c', '1', '-i', '0.2', IPv4.toString(ip)]);
+            proc = Hardware.spawn('ping', ['-c', '1', '-i', '0.2', IPv4.toString(ip)]);
         
-        if (!options.silent) {
-            proc.stderr.on('data', (data) => {
-                process.stdout.write(data);
-            });
+        proc._ipv4_ping_error = 0;
+        proc.stderr.on('data', (data) => {
+            if (data.includes('unreachable')) {
+                proc._ipv4_ping_error = 1;
+            }
 
-            proc.stdout.on('data', (data) => {
+            if (!options.silent) 
                 process.stdout.write(data);
-            });      
-        }
+        });
+
+        proc.stdout.on('data', (data) => {
+            if (data.includes('unreachable')) {
+                proc._ipv4_ping_error = 1;
+            }
+
+            if (!options.silent) 
+                process.stdout.write(data);
+        });      
+        
 
         return new Promise((resolve) => {
-            proc.on('close', err => resolve(err));
+            proc.on('close', err => Hardware.handlePing(resolve, proc, err));
         })
+    }
+
+    static handlePing(cb, proc, err) {
+        cb(proc._ipv4_ping_error | err);
     }
     
     /**
