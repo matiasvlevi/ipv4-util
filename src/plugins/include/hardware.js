@@ -65,7 +65,10 @@ class Hardware {
         });
 
         proc.stdout.on('data', (data) => {
-            if (data.includes('unreachable')) {
+            if (data.toString()
+					.toLocaleLowerCase()
+					.includes('unreachable'))
+			{
                 proc._ipv4.err = 1;
             }
 
